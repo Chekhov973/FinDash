@@ -21,6 +21,7 @@ FinDash — дашборд финансовых показателей
   - Charts.js - отрисовка графиков
   - WebSocket - real-time обмен данными с сервером
   - Next.js
+  - ESLynt + Stylelint
 
 - Бэк:
   - Node.js
@@ -30,4 +31,7 @@ FinDash — дашборд финансовых показателей
   - Яндекс Метрика - для сбора данных
  
 - Тесты:
-  - Jest + React Testing Library, e2e 
+  - Jest + React Testing Library, e2e
+
+- Деплой:
+  - Docker Compose
