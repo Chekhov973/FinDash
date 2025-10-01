@@ -18,7 +18,7 @@ FinDash — дашборд финансовых показателей
 - Фронт:
   - React - UI
   - Redux - стейт
-  - Charts.js - отрисовка графиков
+  - Chart.js - отрисовка графиков
   - WebSocket - real-time обмен данными с сервером
   - Next.js
   - ESLynt + Stylelint
