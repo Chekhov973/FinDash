@@ -22,10 +22,10 @@ FinDash — дашборд финансовых показателей
   - WebSocket - real-time обмен данными с сервером
   - Next.js
   - ESLynt + Stylelint
-  - Crypto.js - для шифрования данных пользователя
 
 - Бэк:
   - Node.js
+  - Crypto.js - для шифрования данных пользователя
   - CoinLayer API - данные валют
   - Alpha Vantage API - данные по акциям
   - PostgreSQL
