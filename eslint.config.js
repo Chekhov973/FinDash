@@ -23,7 +23,7 @@ export default [
     plugins: {
       react: react,
     },
-    ...[react.configs.flat.recommended],
+    ...react.configs.flat.recommended,
     
     rules: {
       "react/prop-types": "off", 
