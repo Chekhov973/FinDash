@@ -1,14 +1,25 @@
 /* eslint-env jest */
-/* global test, expect */
 /* eslint-disable no-unused-vars */
-
-// Тест для проверки G3.5 (unit test coverage)
-// Эта функция не покрыта тестом, чтобы проверить, что CI блокирует PR при покрытии ниже 80%
 function uncoveredFunction() {
   return 42;
 }
 
-// Для успешной проверки покрытия раскомментируйте тест ниже:
-// test('covered function', () => {
-//   expect(uncoveredFunction()).toBe(42);
-// });
+test("fail: uncoveredFunction не возвращает 43", () => {
+  expect(uncoveredFunction()).toBe(43);
+});
+
+test("fail: uncoveredFunction возвращает строку", () => {
+  expect(typeof uncoveredFunction()).toBe("string");
+});
+
+test("pass: uncoveredFunction возвращает 42", () => {
+  expect(uncoveredFunction()).toBe(42);
+});
+
+test("pass: uncoveredFunction возвращает число", () => {
+  expect(typeof uncoveredFunction()).toBe("number");
+});
+
+test("pass: uncoveredFunction больше 40", () => {
+  expect(uncoveredFunction()).toBeGreaterThan(40);
+});
