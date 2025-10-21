@@ -24,7 +24,7 @@ test.describe("Vite + React App", () => {
 
     // Проверяем, что есть текст с инструкцией
     await expect(page.locator(".read-the-docs")).toContainText(
-      "Click on the Vite and React logos"
+      "Some text to learn more"
     );
   });
 });
