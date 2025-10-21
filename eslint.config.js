@@ -7,31 +7,31 @@ export default [
   {
     languageOptions: {
       globals: {
-        ...globals.browser, 
-        ...globals.node
+        ...globals.browser,
+        ...globals.node,
       },
       parserOptions: {
         ecmaFeatures: {
-          jsx: true, 
+          jsx: true,
         },
       },
     },
   },
 
   {
-    files: ["**/*.{js,jsx}"], 
+    files: ["**/*.{js,jsx}"],
     plugins: {
       react: react,
     },
     ...react.configs.flat.recommended,
-    
+
     rules: {
-      "react/prop-types": "off", 
-      "react/react-in-jsx-scope": "off" 
+      "react/prop-types": "off",
+      "react/react-in-jsx-scope": "off",
     },
     settings: {
       react: {
-        version: "detect", 
+        version: "detect",
       },
     },
   },
