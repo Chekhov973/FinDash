@@ -1,5 +1,4 @@
 /* eslint-env jest */
-/* eslint-disable no-unused-vars */
 function uncoveredFunction() {
   return 42;
 }
