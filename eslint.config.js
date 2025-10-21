@@ -35,4 +35,16 @@ export default [
       },
     },
   },
+  // Provide Jest globals for test files and ignore coverage output
+  {
+    files: ["**/__tests__/**/*.cjs", "**/tests/**/*.cjs", "**/*.test.cjs"],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
+  {
+    ignores: ["coverage/**"],
+  },
 ];
