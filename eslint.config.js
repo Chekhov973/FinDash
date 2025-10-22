@@ -37,7 +37,13 @@ export default [
   },
   // Provide Jest globals for test files and ignore coverage output
   {
-    files: ["**/__tests__/**/*.cjs", "**/tests/**/*.cjs", "**/*.test.cjs"],
+    // match common test file patterns (jest/playwright/mocha style)
+    files: [
+      "**/__tests__/**/*.{js,cjs,mjs}",
+      "**/tests/**/*.{js,cjs,mjs}",
+      "**/*.test.{js,cjs,mjs}",
+      "**/*.spec.{js,cjs,mjs}",
+    ],
     languageOptions: {
       globals: {
         ...globals.jest,
