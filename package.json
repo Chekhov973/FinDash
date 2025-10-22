@@ -44,6 +44,11 @@
     "transform": {},
     "testPathIgnorePatterns": [
       "<rootDir>/tests/e2e/"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/**/*.test.*"
     ]
   }
 }
