@@ -14,13 +14,13 @@ test.describe("Vite + React App", () => {
     await expect(reactLogo).toBeVisible();
 
     // Проверяем заголовок
-    await expect(page.locator("h1")).toHaveText("Vite + React");
+    await expect(page.locator("h1")).toHaveText("wrong text");
 
     // Проверяем кнопку и счётчик
     const button = page.locator("button");
     await expect(button).toHaveText("count is 0");
     await button.click();
-    await expect(button).toHaveText("count is 1");
+    await expect(button).toHaveText("count is 1000");
 
     // Проверяем, что есть текст с инструкцией
     await expect(page.locator(".read-the-docs")).toContainText(

@@ -10,7 +10,7 @@
     "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "prettier:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test:unit": "jest",
-    "test:e2e": "npx playwright test tests/e2e || echo 'No e2e tests to run' || true",
+    "test:e2e": "npx playwright test tests/e2e",
     "preview": "vite preview"
   },
   "dependencies": {
