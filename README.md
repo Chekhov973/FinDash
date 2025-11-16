@@ -1,43 +1,118 @@
-# FinDash
+# FinDash - Financial Dashboard
 
-FinDash — дашборд финансовых показателей
+Современное веб-приложение для управления финансами с real-time отслеживанием криптовалют.
 
-# Кратко
+## Структура проекта
 
-Веб-приложение для визуализации курсов валют, акций и криптовалют в реальном времени.
+```
+FinDash/
+├── frontend/          # React фронтенд приложение
+│   ├── src/
+│   │   ├── components/    # React компоненты
+│   │   ├── context/       # Context API для состояния
+│   │   ├── services/      # Сервисы (API, WebSocket)
+│   │   └── styles/        # CSS стили
+│   ├── package.json
+│   └── vite.config.ts
+└── README.md
+```
 
-# План фич
+## Быстрый старт
 
-- Авторизация аккаунта
-- Графики валют
-- Добавление валют в отслеживаемые
-- Сортировка и фильтрация валют
-- Скачивание отчетов
-- Сравнение курсов валют
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-# Стек
+Откройте http://localhost:5173
 
-- Фронт:
+## Функционал
 
-  - React - UI
-  - Redux - стейт
-  - Chart.js - отрисовка графиков
-  - WebSocket - real-time обмен данными с сервером
-  - Next.js
-  - ESLynt + Stylelint
+### Авторизация
+- Форма авторизации с валидацией
+- Шифрование паролей (AES)
+- Сохранение токенов в localStorage
+- Защищенные маршруты
 
-- Бэк:
+**Тестовые данные:**
+- Email: test@example.com
+- Password: любой
 
-  - Node.js
-  - Crypto.js - для шифрования данных пользователя
-  - CoinLayer API - данные валют
-  - Alpha Vantage API - данные по акциям
-  - PostgreSQL
-  - Яндекс Метрика - для сбора данных
+### Real-time отслеживание валют
+- Добавление/удаление валют
+- Live обновление цен через WebSocket (эмулируется)
+- Интерактивные графики (Chart.js)
+- История изменений цен
+- Визуализация процентных изменений
 
-- Тесты:
+### Отчёты
+- Формирование отчётов по валютам
+- Выбор периода и интервала
+- Генерация PDF и CSV отчётов
+- История созданных отчётов
+- Скачивание отчётов
+- Статистика (мин/макс/средняя цена)
 
-  - Jest + React Testing Library, e2e
+## Технологии
 
-- Деплой:
-  - Docker Compose
+### Frontend
+- React 19 + TypeScript
+- React Router - маршрутизация
+- React Context API - управление состоянием
+- Chart.js + react-chartjs-2 - графики
+- WebSocket - real-time обновления
+- jsPDF + jspdf-autotable - генерация PDF
+- Vite - сборщик
+
+### Стек
+- ESLint + Stylelint - линтеры
+- Prettier - форматирование
+- CryptoJS - шифрование
+
+## Разработка
+
+```bash
+cd frontend
+
+npm run dev          # Dev сервер
+npm run build        # Продакшн сборка
+npm run lint         # Проверка ESLint
+npm run preview      # Просмотр продакшн сборки
+```
+
+## Архитектура
+
+### Авторизация
+1. AuthView - форма входа
+2. AuthService - API авторизации
+3. AuthContext - глобальное состояние
+4. Confirm - подтверждение входа
+5. PrivateRoute - защита маршрутов
+
+### Валюты и графики
+1. ValueLocator - выбор валюты
+2. CurrencyAPI - загрузка данных
+3. WebSocketService - real-time обновления
+4. CurrencyContext - состояние валют
+5. UpdateGraphicsService - форматирование данных для графиков
+6. ChartsView - отображение графиков
+
+### Отчёты
+1. ReportForm - форма параметров отчёта
+2. ReportService - генерация PDF/CSV
+3. ReportContext - состояние отчётов
+4. ReportHistory - таблица истории
+5. ReportsPage - страница отчётов
+
+## Дизайн
+
+Градиентный дизайн: голубой (#667eea) → светло-фиолетовый (#764ba2)
+- Полупрозрачные карточки с backdrop blur
+- Плавные анимации
+- Адаптивная верстка
+- Современный UI/UX
+
+## Лицензия
+
+MIT
