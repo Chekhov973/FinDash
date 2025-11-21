@@ -32,6 +32,12 @@ export function Layout({ children }: LayoutProps) {
             Панель управления
           </button>
           <button
+            className={`nav-button ${isActive('/tracking') ? 'active' : ''}`}
+            onClick={() => navigate('/tracking')}
+          >
+            Отслеживание
+          </button>
+          <button
             className={`nav-button ${isActive('/reports') ? 'active' : ''}`}
             onClick={() => navigate('/reports')}
           >

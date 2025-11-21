@@ -5,6 +5,7 @@ import { ReportProvider } from './context/ReportContext';
 import { AuthView } from './components/AuthView';
 import { Confirm } from './components/Confirm';
 import { Dashboard } from './components/Dashboard';
+import { TrackingPage } from './components/TrackingPage';
 import { ReportsPage } from './components/ReportsPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import './index.css';
@@ -30,6 +31,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Dashboard />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/tracking" 
+                element={
+                  <PrivateRoute>
+                    <TrackingPage />
                   </PrivateRoute>
                 } 
               />
