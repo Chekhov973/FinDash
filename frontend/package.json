@@ -10,11 +10,13 @@
     "prettier:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "prettier:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test:unit": "jest",
-    "test:e2e": "npx playwright test tests/e2e || echo 'No e2e tests to run' || true",
+    "test:e2e": "playwright test",
     "preview": "vite preview"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",
+    "@sentry/react": "^10.27.0",
+    "@sentry/tracing": "^7.120.4",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "crypto-js": "^4.2.0",
@@ -34,6 +36,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@playwright/test": "^1.57.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.1.16",
@@ -44,17 +50,13 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-environment-jsdom": "^30.2.0",
     "prettier": "^2.8.8",
     "stylelint": "^16.25.0",
     "stylelint-config-standard": "^39.0.1",
+    "ts-jest": "^29.4.5",
     "typescript": "^5.9.3",
     "vite": "^7.1.7"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {},
-    "testPathIgnorePatterns": [
-      "<rootDir>/tests/e2e/"
-    ]
   }
 }
