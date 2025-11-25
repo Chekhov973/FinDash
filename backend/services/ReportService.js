@@ -45,7 +45,10 @@ class ReportService {
         report: savedReport,
       };
     } catch (error) {
-      console.error("ReportService.generateCurrencyComparisonReport error:", error);
+      console.error(
+        "ReportService.generateCurrencyComparisonReport error:",
+        error
+      );
       return {
         success: false,
         error: error.message,
@@ -73,7 +76,8 @@ class ReportService {
           },
           summary: {
             totalItems: favorites.length,
-            currenciesCount: favorites.filter((f) => f.type === "currency").length,
+            currenciesCount: favorites.filter((f) => f.type === "currency")
+              .length,
             stocksCount: favorites.filter((f) => f.type === "stock").length,
           },
         },
@@ -128,4 +132,3 @@ class ReportService {
 }
 
 export default ReportService;
-

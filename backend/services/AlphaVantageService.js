@@ -21,7 +21,9 @@ class AlphaVantageService {
       const data = await response.json();
 
       if (data["Error Message"] || data["Note"]) {
-        throw new Error(data["Error Message"] || data["Note"] || "API limit reached");
+        throw new Error(
+          data["Error Message"] || data["Note"] || "API limit reached"
+        );
       }
 
       const quote = data["Global Quote"];
@@ -69,16 +71,24 @@ class AlphaVantageService {
         functionName = "TIME_SERIES_INTRADAY";
       }
 
-      const url = `${this.baseUrl}?function=${functionName}&symbol=${symbol}&apikey=${this.apiKey}${interval === "intraday" ? "&interval=5min" : ""}`;
+      const url = `${
+        this.baseUrl
+      }?function=${functionName}&symbol=${symbol}&apikey=${this.apiKey}${
+        interval === "intraday" ? "&interval=5min" : ""
+      }`;
 
       const response = await fetch(url);
       const data = await response.json();
 
       if (data["Error Message"] || data["Note"]) {
-        throw new Error(data["Error Message"] || data["Note"] || "API limit reached");
+        throw new Error(
+          data["Error Message"] || data["Note"] || "API limit reached"
+        );
       }
 
-      const timeSeriesKey = Object.keys(data).find((key) => key.includes("Time Series"));
+      const timeSeriesKey = Object.keys(data).find((key) =>
+        key.includes("Time Series")
+      );
       if (!timeSeriesKey) {
         throw new Error("No time series data found");
       }
@@ -117,7 +127,9 @@ class AlphaVantageService {
       const data = await response.json();
 
       if (data["Error Message"] || data["Note"]) {
-        throw new Error(data["Error Message"] || data["Note"] || "API limit reached");
+        throw new Error(
+          data["Error Message"] || data["Note"] || "API limit reached"
+        );
       }
 
       const bestMatches = data["bestMatches"] || [];
@@ -232,4 +244,3 @@ class AlphaVantageService {
 }
 
 export default AlphaVantageService;
-
