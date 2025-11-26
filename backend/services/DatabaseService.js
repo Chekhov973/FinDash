@@ -41,6 +41,47 @@ class DatabaseService {
     }
   }
 
+  // Initialize mock data storage
+  initMockData() {
+    if (!this.users) {
+      this.users = [];
+      this.userFavorites = [];
+      this.userReports = [];
+      
+      // Add default test users for mock mode
+      // Password: "admin" hashed with SHA256
+      const adminHash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+      // Password: "user" hashed with SHA256
+      const userHash = '04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb';
+      // Password: "test123" hashed with SHA256
+      const testHash = 'ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae';
+      
+      this.users.push({
+        id: 1,
+        login: 'admin',
+        passwordHash: adminHash,
+        createdAt: new Date().toISOString(),
+      });
+      
+      this.users.push({
+        id: 2,
+        login: 'user',
+        passwordHash: userHash,
+        createdAt: new Date().toISOString(),
+      });
+      
+      this.users.push({
+        id: 3,
+        login: 'test@example.com',
+        passwordHash: testHash,
+        createdAt: new Date().toISOString(),
+      });
+      
+      console.log('DatabaseService: Mock mode initialized with test users');
+      console.log('Test users: admin/admin, user/user, test@example.com/test123');
+    }
+  }
+
   // Optional initialization: test DB connection
   async init() {
     if (!this.pool) {
@@ -91,6 +132,16 @@ class DatabaseService {
       );
       return null;
     } catch (error) {
+      // If connection error, fallback to mock mode
+      if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+        console.warn(
+          "DatabaseService.findUserByLogin: DB connection failed, falling back to mock mode"
+        );
+        this.usePostgres = false;
+        this.initMockData();
+        const user = this.users.find((u) => u.login === login);
+        return user || null;
+      }
       console.error("DatabaseService.findUserByLogin error:", error);
       throw error;
     }
@@ -133,6 +184,22 @@ class DatabaseService {
       );
       return result.rows[0];
     } catch (error) {
+      // If connection error, fallback to mock mode
+      if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+        console.warn(
+          "DatabaseService.createUser: DB connection failed, falling back to mock mode"
+        );
+        this.usePostgres = false;
+        this.initMockData();
+        const newUser = {
+          id: Math.max(...this.users.map((u) => u.id), 0) + 1,
+          login,
+          passwordHash,
+          createdAt: new Date().toISOString(),
+        };
+        this.users.push(newUser);
+        return newUser;
+      }
       console.error("DatabaseService.createUser error:", error);
       throw error;
     }

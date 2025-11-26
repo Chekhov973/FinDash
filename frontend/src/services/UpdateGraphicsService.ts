@@ -21,14 +21,37 @@ class UpdateGraphicsServiceClass {
       };
     }
 
-    const labels = currencyData.history.map(point => 
-      new Date(point.timestamp).toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
+    // Group data by day and get average price per day
+    const dailyData = new Map<string, { prices: number[], timestamp: number }>();
+    
+    currencyData.history.forEach(point => {
+      const date = new Date(point.timestamp);
+      const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      if (!dailyData.has(dateKey)) {
+        dailyData.set(dateKey, { prices: [], timestamp: point.timestamp });
+      }
+      dailyData.get(dateKey)!.prices.push(point.price);
+    });
+
+    // Sort by date and calculate average price per day
+    const sortedDates = Array.from(dailyData.entries()).sort((a, b) => 
+      a[0].localeCompare(b[0])
     );
 
-    const data = currencyData.history.map(point => point.price);
+    const labels = sortedDates.map(([dateKey]) => {
+      const date = new Date(dateKey);
+      return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+      });
+    });
+
+    const data = sortedDates.map(([, dayData]) => {
+      // Use average price for the day
+      const avgPrice = dayData.prices.reduce((sum, p) => sum + p, 0) / dayData.prices.length;
+      return avgPrice;
+    });
 
     return {
       labels,

@@ -4,7 +4,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { mockAuthAPI } from './services/MockAuthAPI';
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -12,8 +11,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
   sendDefaultPii: true,
 });
-
-mockAuthAPI();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

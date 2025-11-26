@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "nodemon --env-file .env server.js ",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -14,8 +13,8 @@
     "test:unit:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:e2e": "npx playwright test tests/e2e || echo 'No e2e tests to run' || true",
     "preview": "vite preview",
-    "server": "node backend/server.js",
-    "server:dev": "node --watch backend/server.js"
+    "server": "node ../backend/server.js",
+    "server:dev": "node --watch ../backend/server.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",

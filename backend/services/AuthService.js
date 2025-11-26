@@ -163,9 +163,16 @@ class AuthService {
       };
     } catch (error) {
       console.error("AuthService.register error:", error);
+      // Check if it's a database connection error
+      if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+        return {
+          success: false,
+          message: "База данных недоступна. Пожалуйста, проверьте подключение к PostgreSQL или настройте базу данных.",
+        };
+      }
       return {
         success: false,
-        message: "Registration error",
+        message: error.message || "Registration error",
       };
     }
   }

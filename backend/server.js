@@ -4,6 +4,8 @@ import WebSocket, { WebSocketServer } from "ws";
 import cors from "cors";
 import dotenv from "dotenv";
 import crypto from "crypto";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 // Services
 import DatabaseService from "./services/DatabaseService.js";
@@ -20,7 +22,11 @@ import favoritesRoutes from "./routes/favoritesRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
 // Load environment variables
-dotenv.config();
+// Look for .env in the project root (one level up from backend/)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '..');
+dotenv.config({ path: join(projectRoot, '.env') });
 
 const PORT = process.env.PORT || 3500;
 const NODE_ENV = process.env.NODE_ENV || "development";

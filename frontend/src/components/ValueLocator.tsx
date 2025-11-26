@@ -23,11 +23,23 @@ export function ValueLocator() {
   const loadAvailableCurrencies = async () => {
     try {
       const data = await CurrencyAPI.fetchAvailableCurrencies();
-      setAvailableCurrencies(data);
-      if (data.length > 0) {
-        setSelectedSymbol(data[0].symbol);
+      // Ensure we have an array of objects with symbol and name
+      const formattedData = data.map((item: any) => {
+        if (typeof item === 'string') {
+          return { symbol: item, name: item };
+        }
+        return {
+          symbol: item.symbol || item.code || '',
+          name: item.name || item.name_full || item.symbol || item.code || '',
+        };
+      }).filter((item: Currency) => item.symbol && item.name);
+      
+      setAvailableCurrencies(formattedData);
+      if (formattedData.length > 0) {
+        setSelectedSymbol(formattedData[0].symbol);
       }
     } catch (err) {
+      console.error('Error loading currencies:', err);
       setError('Не удалось загрузить список валют');
     }
   };
@@ -68,11 +80,15 @@ export function ValueLocator() {
             className="currency-select"
             disabled={isLoading}
           >
-            {availableCurrencies.map((currency) => (
-              <option key={currency.symbol} value={currency.symbol}>
-                {currency.name} ({currency.symbol})
-              </option>
-            ))}
+            {availableCurrencies.map((currency) => {
+              const displayName = currency.name || currency.symbol || '';
+              const displaySymbol = currency.symbol || '';
+              return (
+                <option key={displaySymbol} value={displaySymbol}>
+                  {displayName} ({displaySymbol})
+                </option>
+              );
+            })}
           </select>
 
           <button
