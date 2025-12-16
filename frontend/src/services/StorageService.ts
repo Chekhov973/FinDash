@@ -17,8 +17,6 @@ class StorageServiceClass {
   private readonly FAVORITES_KEY = 'currency_favorites';
 
   async getStorage(): Promise<StorageItem[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
       if (!data) return [];
@@ -34,8 +32,6 @@ class StorageServiceClass {
   }
 
   async addToStorage(currency: CurrencyData): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200));
-
     const history = await this.getStorage();
 
     const exists = history.find(item => item.currency.symbol === currency.symbol);
@@ -56,8 +52,6 @@ class StorageServiceClass {
   }
 
   async removeFromStorage(itemId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200));
-
     const history = await this.getStorage();
     const filtered = history.filter(item => item.id !== itemId);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
@@ -68,8 +62,6 @@ class StorageServiceClass {
   }
 
   async getFavorites(): Promise<FavoriteItem[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-
     try {
       const data = localStorage.getItem(this.FAVORITES_KEY);
       if (!data) return [];
@@ -85,8 +77,6 @@ class StorageServiceClass {
   }
 
   async addToFavorites(currency: CurrencyData): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200));
-
     const favorites = await this.getFavorites();
 
     const exists = favorites.find(item => item.currency.symbol === currency.symbol);
@@ -107,8 +97,6 @@ class StorageServiceClass {
   }
 
   async removeFromFavorites(itemId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200));
-
     const favorites = await this.getFavorites();
     const filtered = favorites.filter(item => item.id !== itemId);
     localStorage.setItem(this.FAVORITES_KEY, JSON.stringify(filtered));

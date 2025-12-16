@@ -2,6 +2,8 @@ import { useState, FormEvent } from 'react';
 import { CurrencyAPI } from '../services/CurrencyAPI';
 import { ReportService, ReportParams } from '../services/ReportService';
 import { useReport } from '../context/ReportContext';
+import { useCurrency } from '../context/CurrencyContext';
+import { useCurrencyList } from '../context/CurrencyListContext';
 import '../styles/ReportForm.css';
 
 const CURRENCIES = [
@@ -34,6 +36,8 @@ export function ReportForm() {
   const [format, setFormat] = useState<'pdf' | 'csv'>('pdf');
 
   const { addReport, setIsGenerating, setError } = useReport();
+  const { currencies } = useCurrency();
+  const { currencies: availableCurrencies } = useCurrencyList();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -57,7 +61,22 @@ export function ReportForm() {
     setIsGenerating(true);
 
     try {
-      const currencyData = await CurrencyAPI.fetchCurrencyData(currency);
+      // Проверяем: может валюта уже отслеживается?
+      let currencyData = currencies.get(currency);
+      
+      // Получаем имя валюты из списка
+      const currencyInfo = availableCurrencies.find(c => c.symbol === currency);
+      const currencyName = currencyInfo?.name || currency;
+      
+      // Если валюта не отслеживается - загружаем с правильными параметрами для отчёта
+      if (!currencyData) {
+        currencyData = await CurrencyAPI.fetchCurrencyDataForReport(
+          currency,
+          start,
+          end,
+          currencyName
+        );
+      }
 
       const report = await ReportService.generateReport(params, currencyData);
       report.format = format;

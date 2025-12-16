@@ -37,7 +37,7 @@ interface TimeSeriesResponse {
 const API_BASE_URL = '/api';
 
 class CurrencyAPIService {
-  async fetchCurrencyData(symbol: string): Promise<CurrencyData> {
+  async fetchCurrencyData(symbol: string, name?: string): Promise<CurrencyData> {
     try {
       // Get current rate
       const ratesResponse = await fetch(
@@ -109,13 +109,10 @@ class CurrencyAPIService {
         }
       }
 
-      // Get currency name from available currencies
-      const currencies = await this.fetchAvailableCurrencies();
-      const currencyInfo = currencies.find((c) => c.symbol === symbol);
-
+      // Используем переданное имя валюты или символ как fallback
       return {
         symbol,
-        name: currencyInfo?.name || symbol,
+        name: name || symbol,
         price: currentPrice,
         change24h,
         timestamp,
@@ -137,6 +134,69 @@ class CurrencyAPIService {
       };
     } catch (error) {
       console.error('Error fetching currency data:', error);
+      throw error;
+    }
+  }
+
+  async fetchCurrencyDataForReport(
+    symbol: string,
+    startDate: Date,
+    endDate: Date,
+    name?: string
+  ): Promise<CurrencyData> {
+    try {
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      // Получаем текущий курс и исторические данные
+      const [ratesResponse, timeseriesResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/currencies/rates?symbols=${symbol}`),
+        fetch(`${API_BASE_URL}/currencies/timeseries/${symbol}?startDate=${startDateStr}&endDate=${endDateStr}`)
+      ]);
+
+      if (!ratesResponse.ok) {
+        throw new Error(`Failed to fetch rate for ${symbol}`);
+      }
+
+      const ratesData: RatesResponse = await ratesResponse.json();
+      
+      if (!ratesData.success || !ratesData.rates || !ratesData.rates[symbol]) {
+        throw new Error(`Currency ${symbol} not found or unavailable`);
+      }
+
+      const currentPrice = ratesData.rates[symbol];
+      const timestamp = ratesData.timestamp || Date.now();
+
+      let history: PricePoint[] = [];
+      let change24h = 0;
+
+      if (timeseriesResponse.ok) {
+        const timeseriesData: TimeSeriesResponse = await timeseriesResponse.json();
+        
+        if (timeseriesData.success && timeseriesData.rates) {
+          history = timeseriesData.rates.map((point) => ({
+            timestamp: new Date(point.date).getTime(),
+            price: point.rate,
+          }));
+
+          // Calculate change based on period
+          if (history.length >= 2) {
+            const firstPrice = history[0].price;
+            change24h = ((currentPrice - firstPrice) / firstPrice) * 100;
+          }
+        }
+      }
+
+      return {
+        symbol,
+        name: name || symbol,
+        price: currentPrice,
+        change24h,
+        timestamp,
+        history,
+      };
+    } catch (error) {
+      console.error('Error fetching report data:', error);
       throw error;
     }
   }

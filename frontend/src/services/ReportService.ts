@@ -24,9 +24,36 @@ class ReportServiceClass {
     return `${params.currency}_${params.interval}_${dateStr}`;
   }
 
-  async generateReport(params: ReportParams, data: CurrencyData): Promise<Report> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  private calculateStats(history: PricePoint[]) {
+    if (history.length === 0) {
+      return { minPrice: 0, maxPrice: 0, avgPrice: 0 };
+    }
 
+    const minPrice = Math.min(...history.map(p => p.price));
+    const maxPrice = Math.max(...history.map(p => p.price));
+    const avgPrice = history.reduce((sum, p) => sum + p.price, 0) / history.length;
+
+    return { minPrice, maxPrice, avgPrice };
+  }
+
+  private filterHistoryByPeriod(history: PricePoint[], startDate: Date, endDate: Date): PricePoint[] {
+    return history.filter(point => {
+      const pointDate = new Date(point.timestamp);
+      return pointDate >= startDate && pointDate <= endDate;
+    });
+  }
+
+  private optimizeHistoryForPDF(history: PricePoint[], maxPoints: number = 100): PricePoint[] {
+    if (history.length <= maxPoints) {
+      return history;
+    }
+    
+    // Берем каждую N-ю точку
+    const step = Math.ceil(history.length / maxPoints);
+    return history.filter((_, index) => index % step === 0);
+  }
+
+  async generateReport(params: ReportParams, data: CurrencyData): Promise<Report> {
     const report: Report = {
       id: Date.now().toString(),
       name: this.generateReportName(params),
@@ -44,6 +71,19 @@ class ReportServiceClass {
 
     const doc = new jsPDF();
 
+    // Фильтруем историю по выбранному периоду
+    const filteredHistory = this.filterHistoryByPeriod(
+      report.data.history,
+      report.params.startDate,
+      report.params.endDate
+    );
+
+    // Оптимизируем для PDF (не более 100 точек)
+    const optimizedHistory = this.optimizeHistoryForPDF(filteredHistory, 100);
+
+    // Вычисляем статистику
+    const stats = this.calculateStats(filteredHistory);
+
     doc.setFontSize(20);
     doc.text('FinDash - Currency Report', 14, 20);
 
@@ -58,29 +98,26 @@ class ReportServiceClass {
 
     doc.setFontSize(11);
     doc.text(`Current Price: $${report.data.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 80);
-    doc.text(`24h Change: ${report.data.change24h >= 0 ? '+' : ''}${report.data.change24h.toFixed(2)}%`, 14, 87);
+    doc.text(`Period Change: ${report.data.change24h >= 0 ? '+' : ''}${report.data.change24h.toFixed(2)}%`, 14, 87);
 
-    if (report.data.history.length > 0) {
-      const minPrice = Math.min(...report.data.history.map(p => p.price));
-      const maxPrice = Math.max(...report.data.history.map(p => p.price));
-      const avgPrice = report.data.history.reduce((sum, p) => sum + p.price, 0) / report.data.history.length;
-
-      doc.text(`Min Price: $${minPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 94);
-      doc.text(`Max Price: $${maxPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 101);
-      doc.text(`Avg Price: $${avgPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 108);
+    if (filteredHistory.length > 0) {
+      doc.text(`Min Price: $${stats.minPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 94);
+      doc.text(`Max Price: $${stats.maxPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 101);
+      doc.text(`Avg Price: $${stats.avgPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 14, 108);
+      doc.text(`Data points: ${filteredHistory.length} (showing ${optimizedHistory.length} in table)`, 14, 115);
     }
 
-    if (report.data.history.length > 0) {
+    if (optimizedHistory.length > 0) {
       doc.setFontSize(14);
-      doc.text('Price History', 14, 125);
+      doc.text('Price History', 14, 130);
 
-      const tableData = report.data.history.map(point => [
+      const tableData = optimizedHistory.map(point => [
         new Date(point.timestamp).toLocaleString('ru-RU'),
         `$${point.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       ]);
 
       autoTable(doc, {
-        startY: 130,
+        startY: 135,
         head: [['Time', 'Price']],
         body: tableData,
         theme: 'grid',
@@ -95,6 +132,16 @@ class ReportServiceClass {
   generateCSV(report: Report): void {
     if (!report.data) return;
 
+    // Фильтруем историю по выбранному периоду
+    const filteredHistory = this.filterHistoryByPeriod(
+      report.data.history,
+      report.params.startDate,
+      report.params.endDate
+    );
+
+    // Вычисляем статистику
+    const stats = this.calculateStats(filteredHistory);
+
     let csv = 'FinDash - Currency Report\n\n';
     csv += `Currency,${report.data.name} (${report.data.symbol})\n`;
     csv += `Date,${new Date(report.createdAt).toLocaleString('ru-RU')}\n`;
@@ -102,19 +149,16 @@ class ReportServiceClass {
     csv += `Period,${report.params.startDate.toLocaleDateString('ru-RU')} - ${report.params.endDate.toLocaleDateString('ru-RU')}\n\n`;
 
     csv += `Current Price,$${report.data.price.toFixed(2)}\n`;
-    csv += `24h Change,${report.data.change24h.toFixed(2)}%\n\n`;
+    csv += `Period Change,${report.data.change24h.toFixed(2)}%\n\n`;
 
-    if (report.data.history.length > 0) {
-      const minPrice = Math.min(...report.data.history.map(p => p.price));
-      const maxPrice = Math.max(...report.data.history.map(p => p.price));
-      const avgPrice = report.data.history.reduce((sum, p) => sum + p.price, 0) / report.data.history.length;
-
-      csv += `Min Price,$${minPrice.toFixed(2)}\n`;
-      csv += `Max Price,$${maxPrice.toFixed(2)}\n`;
-      csv += `Avg Price,$${avgPrice.toFixed(2)}\n\n`;
+    if (filteredHistory.length > 0) {
+      csv += `Min Price,$${stats.minPrice.toFixed(2)}\n`;
+      csv += `Max Price,$${stats.maxPrice.toFixed(2)}\n`;
+      csv += `Avg Price,$${stats.avgPrice.toFixed(2)}\n`;
+      csv += `Data points,${filteredHistory.length}\n\n`;
 
       csv += 'Time,Price\n';
-      report.data.history.forEach(point => {
+      filteredHistory.forEach(point => {
         csv += `${new Date(point.timestamp).toLocaleString('ru-RU')},$${point.price.toFixed(2)}\n`;
       });
     }

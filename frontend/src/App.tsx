@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CurrencyListProvider } from './context/CurrencyListContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { ReportProvider } from './context/ReportContext';
 import { AuthView } from './components/AuthView';
@@ -15,48 +16,50 @@ function App() {
   return (
     <Sentry.ErrorBoundary fallback={<div>Произошла ошибка</div>}>
       <AuthProvider>
-        <CurrencyProvider>
-          <ReportProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<AuthView />} />
-                <Route 
-                  path="/confirm" 
-                  element={
-                    <PrivateRoute>
-                      <Confirm />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/tracking" 
-                  element={
-                    <PrivateRoute>
-                      <TrackingPage />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route 
-                  path="/reports" 
-                  element={
-                    <PrivateRoute>
-                      <ReportsPage />
-                    </PrivateRoute>
-                  } 
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </BrowserRouter>
-          </ReportProvider>
-        </CurrencyProvider>
+        <CurrencyListProvider>
+          <CurrencyProvider>
+            <ReportProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<AuthView />} />
+                  <Route 
+                    path="/confirm" 
+                    element={
+                      <PrivateRoute>
+                        <Confirm />
+                      </PrivateRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/dashboard" 
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/tracking" 
+                    element={
+                      <PrivateRoute>
+                        <TrackingPage />
+                      </PrivateRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/reports" 
+                    element={
+                      <PrivateRoute>
+                        <ReportsPage />
+                      </PrivateRoute>
+                    } 
+                  />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </BrowserRouter>
+            </ReportProvider>
+          </CurrencyProvider>
+        </CurrencyListProvider>
       </AuthProvider>
     </Sentry.ErrorBoundary>
   );

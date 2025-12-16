@@ -36,32 +36,34 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const subscribeToCurrency = useCallback((symbol: string) => {
-    if (subscriptions.has(symbol)) {
-      return;
-    }
-
-    const unsubscribe = WebSocketService.subscribe(symbol, (data) => {
-      addCurrency(data);
-    });
-
     setSubscriptions(prev => {
+      // Проверяем есть ли уже подписка
+      if (prev.has(symbol)) {
+        return prev;
+      }
+
+      const unsubscribe = WebSocketService.subscribe(symbol, (data) => {
+        addCurrency(data);
+      });
+
       const next = new Map(prev);
       next.set(symbol, unsubscribe);
       return next;
     });
-  }, [addCurrency, subscriptions]);
+  }, [addCurrency]);
 
   const unsubscribeFromCurrency = useCallback((symbol: string) => {
-    const unsubscribe = subscriptions.get(symbol);
-    if (unsubscribe) {
-      unsubscribe();
-      setSubscriptions(prev => {
+    setSubscriptions(prev => {
+      const unsubscribe = prev.get(symbol);
+      if (unsubscribe) {
+        unsubscribe();
         const next = new Map(prev);
         next.delete(symbol);
         return next;
-      });
-    }
-  }, [subscriptions]);
+      }
+      return prev;
+    });
+  }, []);
 
   const selectCurrency = useCallback((symbol: string) => {
     setSelectedCurrency(symbol);
